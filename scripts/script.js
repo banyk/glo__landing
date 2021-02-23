@@ -50,4 +50,41 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	countTimer('25 feb 2021');
 
+
+	const toggleMenu = () => {
+		const menuBtn = document.querySelector('.menu'),
+			menu = document.querySelector('menu'),
+			closeBtn = menu.querySelector('.close-btn'),
+			menuItems = menu.querySelectorAll('ul>li');
+
+		const handlerMenu = () => {
+			menu.classList.toggle('active-menu');
+		};
+
+		menuBtn.addEventListener('click', handlerMenu);
+		menuItems.forEach(item => item.addEventListener('click', handlerMenu));
+
+		closeBtn.addEventListener('click', handlerMenu);
+
+	};
+
+	toggleMenu();
+
+	const togglePopup = () => {
+		const popup = document.querySelector('.popup'),
+			popupBtns = document.querySelectorAll('.popup-btn'),
+			popupCloseBtn = popup.querySelector('.popup-close');
+
+		popupBtns.forEach(item => {
+			item.addEventListener('click', () => {
+				popup.style.display = 'block';
+			});
+		});
+
+		popupCloseBtn.addEventListener('click', () => {
+			popup.style.display = 'none';
+		});
+	};
+
+	togglePopup();
 });
