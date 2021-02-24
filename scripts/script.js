@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
 				timerSeconds.textContent = '00';
 				return false;
 			} else if (timer.timeRemaining > 0) {
-				for (let key in timer) {
+				for (const key in timer) {
 					if (timer[key] < 10) {
 						timer[key] = '0' + timer[key];
 					}
@@ -49,13 +49,12 @@ window.addEventListener('DOMContentLoaded', () => {
 	};
 
 	countTimer('25 feb 2021');
+	// таймер
 
 
 	const toggleMenu = () => {
 		const menuBtn = document.querySelector('.menu'),
-			menu = document.querySelector('menu'),
-			closeBtn = menu.querySelector('.close-btn'),
-			menuList = menu.querySelector('ul');
+			menu = document.querySelector('menu');
 
 		const handlerMenu = () => {
 			menu.classList.toggle('active-menu');
@@ -63,25 +62,28 @@ window.addEventListener('DOMContentLoaded', () => {
 
 		menuBtn.addEventListener('click', handlerMenu);
 
-		menuList.addEventListener('click', event => {
-			if (event.target.tagName === 'A') handlerMenu();
+		menu.addEventListener('click', event => {
+			let target = event.target;
+			if (target.classList.contains('close-btn')) {
+				handlerMenu();
+			} else {
+				target = target.closest('ul>li>a');
+				if (target) handlerMenu();
+			}
 		});
-
-		closeBtn.addEventListener('click', handlerMenu);
 
 	};
 
 	toggleMenu();
+	// меню
 
 	const togglePopup = () => {
 		const popup = document.querySelector('.popup'),
 			popupContent = popup.querySelector('.popup-content'),
-			popupBtns = document.querySelectorAll('.popup-btn'),
-			popupCloseBtn = popup.querySelector('.popup-close');
+			popupBtns = document.querySelectorAll('.popup-btn');
 
 		let count = 0;
 		const animatePopup = () => {
-
 			const animateInterval = requestAnimationFrame(animatePopup);
 			count++;
 
@@ -91,30 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
 				count = 0;
 				cancelAnimationFrame(animateInterval);
 			}
-
 		};
-
-		/* 		const animatePopup = () => {
-					const start = Date.now();
-
-					const draw = timePassed => {
-						popupContent.style.top = timePassed / 4 + 'px';
-					};
-
-					const timer = setInterval(() => {
-						const timePassed = Date.now() - start;
-
-						if (timePassed >= 400) {
-							clearInterval(timer);
-							return;
-						}
-
-						draw(timePassed);
-
-					}, 20);
-					эту фунцкию по идее скопировал с learnJS, как работает функия вроде понял
-		}; */
-
 
 		popupBtns.forEach(item => {
 			item.addEventListener('click', () => {
@@ -125,14 +104,57 @@ window.addEventListener('DOMContentLoaded', () => {
 			});
 		});
 
-		popupCloseBtn.addEventListener('click', () => {
-			popup.style.display = 'none';
+		popup.addEventListener('click', event => {
+			let target = event.target;
+			if (target.classList.contains('popup-close')) {
+				popup.style.display = 'none';
+			} else {
+				target = target.closest('.popup-content');
+				if (!target) {
+					popup.style.display = 'none';
+				}
+			}
 		});
 
 
 	};
 
 	togglePopup();
+	// попап
 
+	const tabs = () => {
+		const tabsHeader = document.querySelector('.service-header'),
+			tabs = tabsHeader.querySelectorAll('.service-header-tab'),
+			tabsContent = document.querySelectorAll('.service-tab');
+
+		const toggleTabs = index => {
+			for (let i = 0; i < tabs.length; i++) {
+				if (index === i) {
+					tabsContent[i].classList.remove('d-none');
+					tabs[i].classList.add('active');
+				} else {
+					tabsContent[i].classList.add('d-none');
+					tabs[i].classList.remove('active');
+				}
+			}
+		};
+
+		tabsHeader.addEventListener('click', event => {
+			let target = event.target;
+			target = target.closest('.service-header-tab');
+
+			if (target) {
+				tabs.forEach((item, i) => {
+					if (item === target) {
+						toggleTabs(i);
+					}
+				});
+			}
+		});
+
+	};
+
+	tabs();
+	// табы
 
 });
