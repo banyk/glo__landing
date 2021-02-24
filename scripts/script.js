@@ -76,36 +76,49 @@ window.addEventListener('DOMContentLoaded', () => {
 			popupBtns = document.querySelectorAll('.popup-btn'),
 			popupCloseBtn = popup.querySelector('.popup-close');
 
+		let count = 0;
 		const animatePopup = () => {
-			const start = Date.now();
-			console.log('start: ', start);
 
-			const draw = timePassed => {
-				popupContent.style.top = timePassed / 4 + 'px';
-			};
+			const animateInterval = requestAnimationFrame(animatePopup);
+			count++;
 
-			const timer = setInterval(() => {
-				const timePassed = Date.now() - start;
-				console.log('timePassed: ', timePassed);
-
-				if (timePassed >= 400) {
-					clearInterval(timer);
-					return;
-				}
-
-				draw(timePassed);
-
-			}, 20);
-
-
-
+			if (count < 25) {
+				popupContent.style.top = count * 5 + 'px';
+			} else {
+				count = 0;
+				cancelAnimationFrame(animateInterval);
+			}
 
 		};
+
+		/* 		const animatePopup = () => {
+					const start = Date.now();
+
+					const draw = timePassed => {
+						popupContent.style.top = timePassed / 4 + 'px';
+					};
+
+					const timer = setInterval(() => {
+						const timePassed = Date.now() - start;
+
+						if (timePassed >= 400) {
+							clearInterval(timer);
+							return;
+						}
+
+						draw(timePassed);
+
+					}, 20);
+					эту фунцкию по идее скопировал с learnJS, как работает функия вроде понял
+		}; */
+
 
 		popupBtns.forEach(item => {
 			item.addEventListener('click', () => {
 				popup.style.display = 'block';
-				animatePopup();
+				if (screen.width > 768) {
+					animatePopup();
+				}
 			});
 		});
 
