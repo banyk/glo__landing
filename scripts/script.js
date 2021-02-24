@@ -72,19 +72,51 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	const togglePopup = () => {
 		const popup = document.querySelector('.popup'),
+			popupContent = popup.querySelector('.popup-content'),
 			popupBtns = document.querySelectorAll('.popup-btn'),
 			popupCloseBtn = popup.querySelector('.popup-close');
+
+		const animatePopup = () => {
+			const start = Date.now();
+			console.log('start: ', start);
+
+			const draw = timePassed => {
+				popupContent.style.top = timePassed / 4 + 'px';
+			};
+
+			const timer = setInterval(() => {
+				const timePassed = Date.now() - start;
+				console.log('timePassed: ', timePassed);
+
+				if (timePassed >= 400) {
+					clearInterval(timer);
+					return;
+				}
+
+				draw(timePassed);
+
+			}, 20);
+
+
+
+
+		};
 
 		popupBtns.forEach(item => {
 			item.addEventListener('click', () => {
 				popup.style.display = 'block';
+				animatePopup();
 			});
 		});
 
 		popupCloseBtn.addEventListener('click', () => {
 			popup.style.display = 'none';
 		});
+
+
 	};
 
 	togglePopup();
+
+
 });
