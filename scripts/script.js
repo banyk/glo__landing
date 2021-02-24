@@ -55,14 +55,17 @@ window.addEventListener('DOMContentLoaded', () => {
 		const menuBtn = document.querySelector('.menu'),
 			menu = document.querySelector('menu'),
 			closeBtn = menu.querySelector('.close-btn'),
-			menuItems = menu.querySelectorAll('ul>li');
+			menuList = menu.querySelector('ul');
 
 		const handlerMenu = () => {
 			menu.classList.toggle('active-menu');
 		};
 
 		menuBtn.addEventListener('click', handlerMenu);
-		menuItems.forEach(item => item.addEventListener('click', handlerMenu));
+
+		menuList.addEventListener('click', event => {
+			if (event.target.tagName === 'A') handlerMenu();
+		});
 
 		closeBtn.addEventListener('click', handlerMenu);
 
