@@ -365,6 +365,9 @@ window.addEventListener('DOMContentLoaded', () => {
 			const typeValue = calcType.options[calcType.selectedIndex].value,
 				squareValue = +calcSquare.value;
 			console.log('typeValue: ', typeValue);
+			// здесь не показывает 2 option с частным домом, почему-то выдает undefined
+			// но если там value поменять на целое число, то всё нормально
+
 
 			if (calcCount.value > 1) {
 				countValue += (calcCount.value - 1) / 10;
