@@ -285,54 +285,63 @@ window.addEventListener('DOMContentLoaded', () => {
 	// валидация форм
 
 	const validateInputs = () => {
-		const calcItems = document.querySelectorAll('input.calc-item'),
-			formName = document.getElementById('form2-name'),
-			formMessage = document.getElementById('form2-message'),
-			formEmail = document.getElementById('form2-email'),
-			formPhone = document.getElementById('form2-phone');
+		const formMessage = document.getElementById('form2-message'),
+			formNames = document.querySelectorAll('.form-name'),
+			form2Name = document.getElementById('form2-name'),
+			formEmails = document.querySelectorAll('.form-email'),
+			formPhones = document.querySelectorAll('.form-phone');
 
 		const hyphens = /-+/gi,
 			spaces = /\s+/gi;
 
-		calcItems.forEach(item => {
-			item.addEventListener('input', () => {
-				item.value = item.value.replace(/\D/gi, '');
-			});
+		document.addEventListener('input', event => {
+			const target = event.target;
+
+			if (target.matches('.calc-item')) {
+				target.value = target.value.replace(/\D/gi, '');
+			} else if (target.matches('.form-name') || target.matches('#form2-message') ||
+				target.matches('#form2-name')) {
+				target.value = target.value.replace(/[^А-яа-яЁё-\s]/gi, '');
+			} else if (target.matches('.form-email')) {
+				target.value = target.value.replace(/[^A-Za-z@_.!`*'-]/gi, '');
+			} else if (target.matches('.form-phone')) {
+				target.value = target.value.replace(/[^\d()-]/gi, '');
+			}
 		});
 
-		formName.addEventListener('input', () => {
-			const result = formName.value.match(/[^А-яа-яЁё-\s]/gi);
-			formName.value = formName.value.replace(result, '');
+
+		const changeOnBlur = event => {
+			const target = event.target;
+			console.log('печи');
+
+			if (target.matches('.form-name') || target.matches('#form2-name')) {
+				target.value = target.value[0].toUpperCase() + target.value.substring(1).toLowerCase();
+			}
+
+
+			target.value = target.value.replace(hyphens, '-').trim();
+			target.value = target.value.replace(spaces, ' ').trim();
+
+
+		};
+
+		formMessage.addEventListener('blur', changeOnBlur);
+
+		form2Name.addEventListener('blur', changeOnBlur);
+		// отдельный обработчик, так как у этого инпута нет класса .form-name
+		// а верстку без одобрения менять не стал :)
+
+		formNames.forEach(item => {
+			item.addEventListener('blur', changeOnBlur);
 		});
 
-		formName.addEventListener('blur', () => {
-			formName.value = formName.value.replace(hyphens, '-').trim();
-			formName.value = formName.value.replace(spaces, ' ').trim();
-			formName.value = formName.value[0].toUpperCase() + formName.value.substring(1).toLowerCase();
-		});
-		formMessage.addEventListener('input', () => {
-			formMessage.value = formMessage.value.replace(/[^А-яа-яЁё-\s]/gi, '');
-		});
-		formMessage.addEventListener('blur', () => {
-			formMessage.value = formMessage.value.replace(hyphens, '-').trim();
-			formMessage.value = formMessage.value.replace(spaces, ' ').trim();
+		formEmails.forEach(item => {
+			item.addEventListener('blur', changeOnBlur);
 		});
 
-		formEmail.addEventListener('input', () => {
-			formEmail.value = formEmail.value.replace(/[^A-Za-z@_.!`*'-]/gi, '');
+		formPhones.forEach(item => {
+			item.addEventListener('blur', changeOnBlur);
 		});
-		formPhone.addEventListener('input', () => {
-			formPhone.value = formPhone.value.replace(/[^\d()-]/gi, '');
-		});
-		formEmail.addEventListener('blur', () => {
-			formEmail.value = formEmail.value.replace(hyphens, '-').trim();
-			formEmail.value = formEmail.value.replace(spaces, ' ').trim();
-		});
-		formPhone.addEventListener('blur', () => {
-			formPhone.value = formPhone.value.replace(hyphens, '-').trim();
-		});
-
-		// пока что просто сделал задание, еще не оптимизировал нормально
 	};
 
 	validateInputs();
