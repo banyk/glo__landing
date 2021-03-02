@@ -261,5 +261,80 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	slider();
 
+	// смена изображения по наведению
+
+	const changeImageByHover = event => {
+		const target = event.target,
+			targetDataImg = target.dataset.img,
+			targetSrc = target.src;
+
+
+		if (targetDataImg) {
+			if (event.type === 'mouseover') {
+				target.dataset.oldImage = targetSrc;
+				target.src = targetDataImg;
+			} else if (event.type === 'mouseout') {
+				target.src = target.dataset.oldImage;
+
+			}
+		}
+	};
+	document.addEventListener('mouseover', changeImageByHover);
+	document.addEventListener('mouseout', changeImageByHover);
+
+	// валидация форм
+
+	const validateInputs = () => {
+		const calcItems = document.querySelectorAll('input.calc-item'),
+			formName = document.getElementById('form2-name'),
+			formMessage = document.getElementById('form2-message'),
+			formEmail = document.getElementById('form2-email'),
+			formPhone = document.getElementById('form2-phone');
+
+		const hyphens = /-+/gi,
+			spaces = /\s+/gi;
+
+		calcItems.forEach(item => {
+			item.addEventListener('input', () => {
+				item.value = item.value.replace(/\D/gi, '');
+			});
+		});
+
+		formName.addEventListener('input', () => {
+			const result = formName.value.match(/[^А-яа-яЁё-\s]/gi);
+			formName.value = formName.value.replace(result, '');
+		});
+
+		formName.addEventListener('blur', () => {
+			formName.value = formName.value.replace(hyphens, '-').trim();
+			formName.value = formName.value.replace(spaces, ' ').trim();
+			formName.value = formName.value[0].toUpperCase() + formName.value.substring(1).toLowerCase();
+		});
+		formMessage.addEventListener('input', () => {
+			formMessage.value = formMessage.value.replace(/[^А-яа-яЁё-\s]/gi, '');
+		});
+		formMessage.addEventListener('blur', () => {
+			formMessage.value = formMessage.value.replace(hyphens, '-').trim();
+			formMessage.value = formMessage.value.replace(spaces, ' ').trim();
+		});
+
+		formEmail.addEventListener('input', () => {
+			formEmail.value = formEmail.value.replace(/[^A-Za-z@_.!`*'-]/gi, '');
+		});
+		formPhone.addEventListener('input', () => {
+			formPhone.value = formPhone.value.replace(/[^\d()-]/gi, '');
+		});
+		formEmail.addEventListener('blur', () => {
+			formEmail.value = formEmail.value.replace(hyphens, '-').trim();
+			formEmail.value = formEmail.value.replace(spaces, ' ').trim();
+		});
+		formPhone.addEventListener('blur', () => {
+			formPhone.value = formPhone.value.replace(hyphens, '-').trim();
+		});
+
+		// пока что просто сделал задание, еще не оптимизировал нормально
+	};
+
+	validateInputs();
 
 });
