@@ -326,8 +326,6 @@ window.addEventListener('DOMContentLoaded', () => {
 		formMessage.addEventListener('blur', changeOnBlur);
 
 		form2Name.addEventListener('blur', changeOnBlur);
-		// отдельный обработчик, так как у этого инпута нет класса .form-name
-		// а верстку без одобрения менять не стал :)
 
 		formNames.forEach(item => {
 			item.addEventListener('blur', changeOnBlur);
@@ -436,23 +434,48 @@ window.addEventListener('DOMContentLoaded', () => {
 		forms.forEach(item => {
 			item.addEventListener('submit', event => {
 				event.preventDefault();
-				item.insertAdjacentElement('beforeend', statusMessage);
-				statusMessage.textContent = loadMessage;
-				const formData = new FormData(item);
-				const body = {};
 
-				formData.forEach((val, key) => {
-					body[key] = val;
+				const inputs = item.querySelectorAll('input');
+				let isNotValid = false;
+				inputs.forEach(input => {
+					if (input.classList.contains('form-name') && input.value.length < 2) {
+						isNotValid = true;
+						input.after(statusMessage);
+						statusMessage.textContent = 'Поле должно содержать 2 или более символов';
+					}
+					if (input.value.trim() === '') {
+						isNotValid = true;
+						input.after(statusMessage);
+						statusMessage.textContent = 'Заполните пустое поле';
+					}
+					if (input.classList.contains('form-phone') && input.value.length < 7) {
+						isNotValid = true;
+						input.after(statusMessage);
+						statusMessage.textContent = 'Поле должно содержать более 7 знаков';
+					}
 				});
 
-				postData(body, () => {
-					statusMessage.textContent = successMessage;
-				}, error => {
-					statusMessage.textContent = errorMessage;
-					console.log(error);
-				}, () => {
-					item.querySelectorAll('input').forEach(input => input.value = '');
-				});
+				if (isNotValid) {
+					return;
+				} else {
+					item.insertAdjacentElement('beforeend', statusMessage);
+					statusMessage.textContent = loadMessage;
+					const formData = new FormData(item);
+					const body = {};
+
+					formData.forEach((val, key) => {
+						body[key] = val;
+					});
+
+					postData(body, () => {
+						statusMessage.textContent = successMessage;
+					}, error => {
+						statusMessage.textContent = errorMessage;
+						console.log(error);
+					}, () => {
+						item.querySelectorAll('input').forEach(input => input.value = '');
+					});
+				}
 			});
 		});
 	};
