@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	};
 
-	countTimer('25 feb 2021');
+	countTimer('5 march 2021');
 
 	// меню
 	const toggleMenu = () => {
@@ -299,29 +299,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
 			if (target.matches('.calc-item')) {
 				target.value = target.value.replace(/\D/gi, '');
-			} else if (target.matches('.form-name') || target.matches('#form2-message') ||
-				target.matches('#form2-name')) {
-				target.value = target.value.replace(/[^А-яа-яЁё-\s]/gi, '');
+			} else if (target.matches('.form-name') || target.matches('#form2-name')) {
+				target.value = target.value.replace(/[^А-яа-яЁё\s]/gi, '');
 			} else if (target.matches('.form-email')) {
 				target.value = target.value.replace(/[^A-Za-z@_.!`*'-]/gi, '');
 			} else if (target.matches('.form-phone')) {
-				target.value = target.value.replace(/[^\d()-]/gi, '');
+				target.value = target.value.replace(/[^+\d()-]/gi, '');
+			} else if (target.matches('#form2-message')) {
+				target.value = target.value.replace(/[A-Za-z]/gi, '');
 			}
 		});
 
 
 		const changeOnBlur = event => {
 			const target = event.target;
-			console.log('печи');
 
 			if (target.matches('.form-name') || target.matches('#form2-name')) {
 				target.value = target.value[0].toUpperCase() + target.value.substring(1).toLowerCase();
 			}
 
-
 			target.value = target.value.replace(hyphens, '-').trim();
 			target.value = target.value.replace(spaces, ' ').trim();
-
 
 		};
 
@@ -346,15 +344,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	validateInputs();
 
-
 	// калькулятор
 
 	const calc = (price = 100) => {
 		const calcBlock = document.querySelector('.calc-block'),
 			calcType = calcBlock.querySelector('.calc-type'),
 			calcSquare = calcBlock.querySelector('.calc-square'),
-			calcCount = calcBlock.querySelector('.calc-count'),
 			calcDay = calcBlock.querySelector('.calc-day'),
+			calcCount = calcBlock.querySelector('.calc-count'),
 			totalValue = document.getElementById('total');
 
 		const countSum = () => {
@@ -364,9 +361,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 			const typeValue = calcType.options[calcType.selectedIndex].value,
 				squareValue = +calcSquare.value;
-			console.log('typeValue: ', typeValue);
-			// здесь не показывает 2 option с частным домом, почему-то выдает undefined
-			// но если там value поменять на целое число, то всё нормально
+
+			// нужно проверить value и сделать его целым чтобы получить правильный индекс
 
 
 			if (calcCount.value > 1) {
@@ -387,7 +383,7 @@ window.addEventListener('DOMContentLoaded', () => {
 			totalValue.textContent = total;
 		};
 
-		calcBlock.addEventListener('change', event => {
+		calcBlock.addEventListener('input', event => {
 			const target = event.target;
 
 			if (target.matches('input') || target.matches('select')) {
@@ -395,10 +391,72 @@ window.addEventListener('DOMContentLoaded', () => {
 			}
 
 		});
-
-
 	};
 
 	calc(100);
+
+	// send-ajax-form
+
+	const sendForm = () => {
+		const form1 = document.getElementById('form1'),
+			form2 = document.getElementById('form2'),
+			form3 = document.getElementById('form3');
+
+		form1.dataset.form = 'site-form';
+		form2.dataset.form = 'site-form';
+		form3.dataset.form = 'site-form';
+
+
+		const errorMessage = 'Что-то произошло не так',
+			loadMessage = 'Идёт загрузка...',
+			successMessage = 'Спасибо, мы свяжемся с вами в скором времени!';
+
+		const statusMessage = document.createElement('div');
+		statusMessage.style.cssText = 'font-size: 2rem; color: white;';
+
+		const forms = document.querySelectorAll('[data-form]');
+		const postData = (body, outputData, errorData, reset) => {
+			const request = new XMLHttpRequest();
+			request.addEventListener('readystatechange', () => {
+				if (request.readyState !== 4) {
+					return;
+				}
+				if (request.status === 200) {
+					outputData();
+					reset();
+				} else {
+					errorData(request.status);
+				}
+			});
+			request.open('POST', './server.php');
+			request.setRequestHeader('Content-Type', 'application/json');
+			request.send(JSON.stringify(body));
+		};
+
+		forms.forEach(item => {
+			item.addEventListener('submit', event => {
+				event.preventDefault();
+				item.insertAdjacentElement('beforeend', statusMessage);
+				statusMessage.textContent = loadMessage;
+				const formData = new FormData(item);
+				const body = {};
+
+				formData.forEach((val, key) => {
+					body[key] = val;
+				});
+
+				postData(body, () => {
+					statusMessage.textContent = successMessage;
+				}, error => {
+					statusMessage.textContent = errorMessage;
+					console.log(error);
+				}, () => {
+					item.querySelectorAll('input').forEach(input => input.value = '');
+				});
+			});
+		});
+	};
+
+	sendForm();
 
 });
