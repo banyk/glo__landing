@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	};
 
-	countTimer('5 march 2021');
+	countTimer('25 march 2021');
 
 	// меню
 	const toggleMenu = () => {
@@ -413,23 +413,23 @@ window.addEventListener('DOMContentLoaded', () => {
 		statusMessage.style.cssText = 'font-size: 2rem; color: white;';
 
 		const forms = document.querySelectorAll('[data-form]');
-		const postData = (body, outputData, errorData, reset) => {
+
+		const postData = body => new Promise((resolve, reject) => {
 			const request = new XMLHttpRequest();
 			request.addEventListener('readystatechange', () => {
 				if (request.readyState !== 4) {
 					return;
 				}
 				if (request.status === 200) {
-					outputData();
-					reset();
+					resolve();
 				} else {
-					errorData(request.status);
+					reject(request.status);
 				}
 			});
 			request.open('POST', './server.php');
 			request.setRequestHeader('Content-Type', 'application/json');
 			request.send(JSON.stringify(body));
-		};
+		});
 
 		forms.forEach(item => {
 			item.addEventListener('submit', event => {
@@ -467,12 +467,12 @@ window.addEventListener('DOMContentLoaded', () => {
 						body[key] = val;
 					});
 
-					postData(body, () => {
+					postData(body).then(() => {
 						statusMessage.textContent = successMessage;
-					}, error => {
+					}).catch(error => {
 						statusMessage.textContent = errorMessage;
 						console.log(error);
-					}, () => {
+					}).finally(() => {
 						item.querySelectorAll('input').forEach(input => input.value = '');
 					});
 				}
