@@ -414,22 +414,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
 		const forms = document.querySelectorAll('[data-form]');
 
-		const postData = body => new Promise((resolve, reject) => {
-			const request = new XMLHttpRequest();
-			request.addEventListener('readystatechange', () => {
-				if (request.readyState !== 4) {
-					return;
-				}
-				if (request.status === 200) {
-					resolve();
-				} else {
-					reject(request.status);
-				}
+		const postData = body => {
+			return fetch('./server.php', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
 			});
-			request.open('POST', './server.php');
-			request.setRequestHeader('Content-Type', 'application/json');
-			request.send(JSON.stringify(body));
-		});
+		};
+
 
 		forms.forEach(item => {
 			item.addEventListener('submit', event => {
@@ -462,18 +456,24 @@ window.addEventListener('DOMContentLoaded', () => {
 					statusMessage.textContent = loadMessage;
 					const formData = new FormData(item);
 					const body = {};
-
 					formData.forEach((val, key) => {
 						body[key] = val;
 					});
 
-					postData(body).then(() => {
-						statusMessage.textContent = successMessage;
+					postData(body).then(response => {
+						if (response.status === 200) {
+							statusMessage.textContent = successMessage;
+						} else {
+							throw new Error('status network is not 200');
+						}
 					}).catch(error => {
 						statusMessage.textContent = errorMessage;
 						console.log(error);
 					}).finally(() => {
 						item.querySelectorAll('input').forEach(input => input.value = '');
+						setTimeout(() => {
+							statusMessage.remove();
+						}, 2000);
 					});
 				}
 			});
