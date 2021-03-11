@@ -12,10 +12,13 @@ const sendForm = () => {
 		loadMessage = 'Идёт загрузка...',
 		successMessage = 'Спасибо, мы свяжемся с вами в скором времени!';
 
+
 	const statusMessage = document.createElement('div');
 	statusMessage.style.cssText = 'font-size: 2rem; color: white;';
 
 	const forms = document.querySelectorAll('[data-form]');
+
+	const popup = document.querySelector('.popup');
 
 	const postData = body => fetch('./server.php', {
 		method: 'POST',
@@ -38,16 +41,25 @@ const sendForm = () => {
 					isNotValid = true;
 					statusMessage.textContent = 'Поле "Ваше имя" должно содержать 2 или более символов';
 					item.insertAdjacentElement('beforeend', statusMessage);
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 4000);
 				}
 				if (input.value.trim() === '') {
 					isNotValid = true;
 					statusMessage.textContent = 'Заполните пустое поле';
 					item.insertAdjacentElement('beforeend', statusMessage);
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 4000);
 				}
 				if (input.classList.contains('form-phone') && input.value.length < 7) {
 					isNotValid = true;
 					statusMessage.textContent = 'Поле "Номер телефона" должно содержать более 7 знаков';
 					item.insertAdjacentElement('beforeend', statusMessage);
+					setTimeout(() => {
+						statusMessage.remove();
+					}, 4000);
 				}
 			});
 
@@ -75,7 +87,10 @@ const sendForm = () => {
 					item.querySelectorAll('input').forEach(input => input.value = '');
 					setTimeout(() => {
 						statusMessage.remove();
-					}, 2000);
+						if (popup.style.display = 'block') {
+							popup.style.display = 'none';
+						}
+					}, 4000);
 				});
 			}
 		});

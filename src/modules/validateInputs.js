@@ -19,6 +19,7 @@ const validateInputs = () => {
 			target.value = target.value.replace(/[^A-Za-z@_.!`*'-]/gi, '');
 		} else if (target.matches('.form-phone')) {
 			target.value = target.value.replace(/[^+\d()-]/gi, '');
+			target.value = target.value.substring(0, 12);
 		} else if (target.matches('#form2-message')) {
 			target.value = target.value.replace(/[A-Za-z]/gi, '');
 		}

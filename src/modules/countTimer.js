@@ -40,6 +40,7 @@ const countTimer = deadline => {
 
 	};
 	let idInterval;
+	updateClock();
 	updateClock() !== false ? idInterval = setInterval(updateClock, 1000) : clearInterval(idInterval);
 
 };
